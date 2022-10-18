@@ -1,6 +1,8 @@
-const { ipcMain, dialog } = require('electron')
+const { ipcMain, dialog, BrowserWindow } = require('electron')
 const fs = require('fs')
 const path = require('path')
+const { spawn } = require('child_process')
+const iconvLite = require('iconv-lite')
 
 // ipcMain.on('select-catalog', event => {
 //   dialog.showOpenDialog({
@@ -20,8 +22,9 @@ async function getConfigJson() {
 }
 // 检查是否存在项目目录信息
 async function isExistProject() {
-  const { catalogPath } = await getConfigJson()
-  return !!catalogPath
+  // const { catalogPath } = await getConfigJson()
+  // return !!catalogPath
+  return false
 }
 
 // 创建选择项目目录的弹窗
@@ -29,13 +32,11 @@ async function createProject(_window, _app) {
   const buttonInteger =  await dialog.showMessageBoxSync(_window, {
     message: '目前还没有博客项目哦',
     detail: '请选择或创建vite-press项目吧',
-    buttons: ['退出 👴🏻不用了', '打开已有项目', '创建(等待开发)']
+    buttons: ['打开已有项目', '创建(等待开发)', '退出!爷不用了'],
+    cancelId: 2,
   })
-  if (buttonInteger === 0) {
-    _app.exit()
-  }
   // 打开已有项目
-  if (buttonInteger === 1) {
+  if (buttonInteger === 0) {
     dialog.showOpenDialog(_window, {
       properties: ['openDirectory']
     }).then(async res => {
@@ -45,8 +46,41 @@ async function createProject(_window, _app) {
       } else createProject(_window, _app) 
     }).catch(error => console.log(error))
   }
-  if (buttonInteger === 2) {
+  if (buttonInteger === 1) {
     // 后续开发
+    fs.cp(
+      path.resolve(__dirname, '../public/template'), 
+      path.resolve(__dirname, '../project'),
+      { recursive: true },
+      async () => {
+        await writeCatalog(path.resolve(__dirname, '../project'))
+        const childProcess = spawn(
+          'npm i', 
+          {
+            cwd: path.resolve(__dirname, '../project'),
+            shell: true
+          }
+        )
+        const loadingBar = new BrowserWindow({
+          parent: _window,
+          modal: true,
+          width: 260,
+          height: 100,
+          frame: false
+        })
+        loadingBar.loadFile(path.resolve(__dirname, '../public/loadingBar.html'))
+        childProcess.stdout.on('data', data => {
+          console.log(1, iconvLite.decode(data, 'cp936'));
+           loadingBar.close()
+        })
+        childProcess.stderr.on('data', (data) => {
+          console.log(2, iconvLite.decode(data, 'cp936'));
+        })
+      }
+    )
+  }
+  if (buttonInteger === 2) {
+    _app.exit()
   }
 }
 
@@ -54,7 +88,7 @@ async function createProject(_window, _app) {
 async function writeCatalog(catalogPath, _configJson) {
   const configJson = _configJson || await getConfigJson()
   configJson.catalogPath = catalogPath
-  await fs.writeFileSync(path.resolve(__dirname, '../config/index.json'), JSON.stringify(configJson))
+  fs.writeFileSync(path.resolve(__dirname, '../config/index.json'), JSON.stringify(configJson))
   // 写入后通知渲染进程切换路由
 }
 module.exports = {

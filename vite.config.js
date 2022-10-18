@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import Unocss from 'unocss/vite'
 import { presetAttributify, presetUno } from 'unocss'
 import path from 'path'
+
 export default defineConfig({
   resolve: {
     alias: {
@@ -13,9 +14,9 @@ export default defineConfig({
     react(),
     Unocss({
       presets: [
-        presetAttributify({ /* preset options */}),
         presetUno(),
-      ],
+        presetAttributify(),
+      ]
     })
   ],
 })
