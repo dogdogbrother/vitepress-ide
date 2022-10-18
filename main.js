@@ -13,11 +13,15 @@ app.on('ready', async () => {
       width: 300,
       height: 340,
       opacity: 0,
+      icon: path.resolve(__dirname, 'assets/icon.png'),
       webPreferences: { 
         nodeIntegration: true,
         contextIsolation: false
       },
     })
+    if (process.platform === 'darwin') {
+      app.dock.setIcon(path.resolve(__dirname, 'assets/icon.png'))
+    }
     windows.rootWindow.loadFile(path.resolve(__dirname, 'public/empty.html'))
     createProject(windows.rootWindow, app)
   }
