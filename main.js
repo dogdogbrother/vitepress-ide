@@ -1,11 +1,10 @@
 const {app, BrowserWindow, ipcMain, Tray, nativeImage } = require('electron')
-const isDev = require('electron-is-dev')
+// const isDev = require('electron-is-dev')
 const { isExistProject, createProject } = require('./app/catalog')
 const path = require('path')
+const { WindowChange, getChild_height_x_y } = require('./util/windowChange')
 
-const windows = {
-
-}
+const windows = {}
 
 app.on('ready', async () => {
   const _isExistProject = await isExistProject()
@@ -24,16 +23,43 @@ app.on('ready', async () => {
     // if (process.platform === 'darwin') {
     //   app.dock.setIcon(path.resolve(__dirname, 'assets/icon.png'))
     // }
-    windows.rootWindow.loadURL('http://localhost:5500/create-project-loading')
-    // console.log(11);
-    // windows.rootWindow.webContents.send('', '23')
-    // windows.rootWindow.webContents.on('did-finish-load', () => {
-    //   windows.rootWindow.webContents.send('createProjectInfo', 'whoooooooh!')
-    // })
     windows.rootWindow.loadFile(path.resolve(__dirname, 'public/empty.html'))
     createProject(windows.rootWindow, app)
+  } else {
+    initMainWindow()
   }
 })
 
+function initMainWindow() {
+  windows.mainWindow = new BrowserWindow({
+    width: 1280,
+    height: 1000,
+    minWidth: 500,
+    minHeight: 500,
+    webPreferences: { 
+      nodeIntegration: true,
+      contextIsolation: false
+    },
+  })
+  windows.mainWindow.loadFile(path.resolve(__dirname, 'public/empty.html'))
+  windows.menuWindow = new BrowserWindow({
+    parent: windows.mainWindow,
+    width: 300,
+    minWidth: 300,
+    frame: false,
+    ...getChild_height_x_y(windows.mainWindow),
+    hasShadow: false,
+    thickFrame: false,
+    webPreferences: { 
+      nodeIntegration: true,
+      contextIsolation: false
+    },
+  })
+  windows.menuWindow.loadURL('http://localhost:5500/menu')
+  new WindowChange(windows.mainWindow, windows.menuWindow)
+}
+module.exports = {
+  initMainWindow
+}
 
 

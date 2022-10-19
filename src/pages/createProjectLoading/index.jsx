@@ -1,7 +1,7 @@
 import stroe from '@/store'
 import { observer } from 'mobx-react-lite'
 function Loading() {
-  return <div className="w-screen h-screen p-2 bg-gray-700 overflow-auto no-scrollbar">
+  return <div className="w-screen h-screen p-4 bg-gray-700 overflow-auto no-scrollbar">
     <h4 className='text-gray-200 font-medium text-lg'>正在执行 npm install 请稍后</h4>
     {
       stroe.createProjectInfo.map((info, index) => {

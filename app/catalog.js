@@ -1,8 +1,9 @@
-const { ipcMain, dialog, BrowserWindow } = require('electron')
+const { ipcMain, dialog, BrowserWindow, Notification } = require('electron')
 const fs = require('fs')
 const path = require('path')
 const { spawn } = require('child_process')
 const iconvLite = require('iconv-lite')
+
 
 // ipcMain.on('select-catalog', event => {
 //   dialog.showOpenDialog({
@@ -54,40 +55,57 @@ async function createProject(_window, _app) {
       { recursive: true },
       async () => {
         await writeCatalog(path.resolve(__dirname, '../project'))
-        const childProcess = spawn(
-          'npm i', 
-          {
-            cwd: path.resolve(__dirname, '../project'),
-            shell: true
-          }
-        )
+        
         const loadingBar = new BrowserWindow({
           parent: _window,
           modal: true,
           width: 460,
           height: 320,
-          frame: true,
+          frame: false,
+          show: false,
+          backgroundColor: 'rgb(55, 65, 81)',
           webPreferences: { 
             nodeIntegration: true,
             contextIsolation: false
           },
         })
         loadingBar.loadURL('http://localhost:5500/create-project-loading')
-        childProcess.stdout.on('data', data => {
-          loadingBar.webContents.postMessage('createProjectInfo', { info: iconvLite.decode(data, 'cp936'), type: 1 })
-        })
-        childProcess.stderr.on('data', (data) => {
-          loadingBar.webContents.postMessage('createProjectInfo', { info: iconvLite.decode(data, 'cp936'), type: 2 })
-        })
-        // 应该还有个3 error 暂时不写了
-        childProcess.stdout.on('close', () => {
-          // loadingBar.close()
+        loadingBar.once('ready-to-show', () => {
+          loadingBar.show()
+          const childProcess = spawn(
+            'npm i', 
+            {
+              cwd: path.resolve(__dirname, '../project'),
+              shell: true
+            }
+          )
+          childProcess.stdout.on('data', data => {
+            loadingBar.webContents.postMessage('createProjectInfo', { info: iconvLite.decode(data, 'cp936'), type: 1 })
+          })
+          childProcess.stderr.on('data', (data) => {
+            loadingBar.webContents.postMessage('createProjectInfo', { info: iconvLite.decode(data, 'cp936'), type: 2 })
+          })
+          // 应该还有个3 error 暂时不写了
+          childProcess.stdout.on('close', () => {
+            const notification = new Notification({
+              body: '安装node_modules完成',
+              silent: true,
+              timeoutType: 'default',
+            })
+            notification.show()
+            _window.close()
+            const { initMainWindow } = require('../main')
+            initMainWindow()
+          })
         })
       }
     )
   }
   if (buttonInteger === 2) {
-    _app.exit()
+    _window.close()
+            const { initMainWindow } = require('../main')
+            initMainWindow()
+    // _app.exit()
   }
 }
 
