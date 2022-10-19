@@ -22,9 +22,9 @@ async function getConfigJson() {
 }
 // 检查是否存在项目目录信息
 async function isExistProject() {
-  // const { catalogPath } = await getConfigJson()
-  // return !!catalogPath
   return false
+  const { catalogPath } = await getConfigJson()
+  return !!catalogPath
 }
 
 // 创建选择项目目录的弹窗
@@ -64,17 +64,19 @@ async function createProject(_window, _app) {
         const loadingBar = new BrowserWindow({
           parent: _window,
           modal: true,
-          width: 260,
-          height: 100,
+          width: 360,
+          height: 200,
           frame: false
         })
-        loadingBar.loadFile(path.resolve(__dirname, '../public/loadingBar.html'))
+        loadingBar.loadURL('http://localhost:5500/create-project-loading')
         childProcess.stdout.on('data', data => {
-          console.log(1, iconvLite.decode(data, 'cp936'));
-           loadingBar.close()
+          // console.log(1, iconvLite.decode(data, 'cp936'));
+        })
+        childProcess.stdout.on('close', () => {
+          loadingBar.close()
         })
         childProcess.stderr.on('data', (data) => {
-          console.log(2, iconvLite.decode(data, 'cp936'));
+          // console.log(2, iconvLite.decode(data, 'cp936'));
         })
       }
     )
