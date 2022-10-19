@@ -64,19 +64,24 @@ async function createProject(_window, _app) {
         const loadingBar = new BrowserWindow({
           parent: _window,
           modal: true,
-          width: 360,
-          height: 200,
-          frame: false
+          width: 460,
+          height: 320,
+          frame: true,
+          webPreferences: { 
+            nodeIntegration: true,
+            contextIsolation: false
+          },
         })
         loadingBar.loadURL('http://localhost:5500/create-project-loading')
         childProcess.stdout.on('data', data => {
-          // console.log(1, iconvLite.decode(data, 'cp936'));
-        })
-        childProcess.stdout.on('close', () => {
-          loadingBar.close()
+          loadingBar.webContents.postMessage('createProjectInfo', { info: iconvLite.decode(data, 'cp936'), type: 1 })
         })
         childProcess.stderr.on('data', (data) => {
-          // console.log(2, iconvLite.decode(data, 'cp936'));
+          loadingBar.webContents.postMessage('createProjectInfo', { info: iconvLite.decode(data, 'cp936'), type: 2 })
+        })
+        // 应该还有个3 error 暂时不写了
+        childProcess.stdout.on('close', () => {
+          // loadingBar.close()
         })
       }
     )
