@@ -1,7 +1,8 @@
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import CreateProjectLoading from './pages/createProjectLoading'
-import Menu from './pages/Menu'
+import Menu from './pages/menu'
+import Editor from './pages/editor'
 // const { ipcRenderer } = require('electron')
 
 function App() {
@@ -12,6 +13,8 @@ function App() {
         <Route path="/create-project-loading" element={<CreateProjectLoading />}></Route>
         {/* 编辑器的左侧菜单 */}
         <Route path='/menu' element={<Menu />}></Route>
+        {/* 编辑器的右侧编辑区域 */}
+        <Route path='/editor' element={<Editor />}></Route>
       </Routes>
     </BrowserRouter>
   </div>
