@@ -4,6 +4,8 @@ const { isExistProject, createProject } = require('./app/createProject')
 const { createCatalog } = require('./app/catalog')
 const { getPath } = require('./util/getPath')
 const { createEditor } = require('./app/editor')
+const { getWindowCinfig } = require('./util/getParams')
+
 
 const windows = {}
 
@@ -19,14 +21,7 @@ app.on('ready', async () => {
 
 async function initMainWindow() {
   windows.mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 1000,
-    minWidth: 550,
-    minHeight: 500,
-    webPreferences: { 
-      nodeIntegration: true,
-      contextIsolation: false
-    },
+    ...getWindowCinfig(1280, 1000, 600, undefined, 500, true),
   })
   windows.mainWindow.loadFile(getPath('public/empty.html'))
   // createCatalog 是支持awit的 暂时不用

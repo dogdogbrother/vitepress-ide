@@ -1,5 +1,6 @@
 const { BrowserWindow } = require('electron')
-const { WindowChange, getMenu_height_x_y } = require('../util/windowChange')
+const { getMenu_height_x_y } = require('../util/windowChange')
+const { getWindowCinfig } = require('../util/getParams')
 /**
  * @description 创建编辑器左侧的目录菜单
  * @param {*} windows 
@@ -23,7 +24,6 @@ function createCatalog(_window, _app) {
       },
     })
     _window.menuWindow.loadURL('http://localhost:5500/menu')
-    // new WindowChange(_window.mainWindow, _window.menuWindow)
     _window.menuWindow.on('ready-to-show', () => {
       resolve()
     })
