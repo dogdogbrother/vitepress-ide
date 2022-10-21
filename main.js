@@ -22,6 +22,7 @@ app.on('ready', async () => {
 async function initMainWindow() {
   windows.mainWindow = new BrowserWindow({
     ...getWindowCinfig(1280, 1000, 600, undefined, 500, true),
+    opacity: 1
   })
   windows.mainWindow.loadFile(getPath('public/empty.html'))
   // createCatalog 是支持awit的 暂时不用

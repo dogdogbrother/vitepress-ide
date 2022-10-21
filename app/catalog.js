@@ -1,6 +1,6 @@
 const { BrowserWindow } = require('electron')
 const { getMenu_height_x_y } = require('../util/windowChange')
-const { getWindowCinfig } = require('../util/getParams')
+
 /**
  * @description 创建编辑器左侧的目录菜单
  * @param {*} windows 
@@ -12,6 +12,7 @@ function createCatalog(_window, _app) {
       parent: _window.mainWindow,
       width: 300,
       minWidth: 300,
+      // maxWidth: 这个应该是父级窗口 - 右侧最小宽度也就是300,
       frame: false,
       ...getMenu_height_x_y(_window.mainWindow),
       hasShadow: false,

@@ -22,17 +22,10 @@ class WindowChange {
   parentWindowChange() {
     this.parent.on('resize', () => {
       const parentContentSize = this.parent.getContentSize()
-      const parentSize = this.parent.getBounds()
-
-      const catalogContentSize = this.catalog.getContentSize()
+      const parentPositionSize = this.parent.getBounds()
       const catalogSize = this.catalog.getBounds()
-
-      const editorContentSize = this.editor.getContentSize()
       const editorSize = this.editor.getBounds()
-      // console.log(parentContentSize);
-      // console.log(parentSize);
-      console.log(catalogContentSize);
-      console.log(catalogSize);
+      const editorMinWidth = this.editor.getMinimumSize()[0]
       /**
        * 改变大小有宽度和高度的变化，高度变化比较简单，直接把父级给下去就行
        * 
@@ -40,22 +33,53 @@ class WindowChange {
        * 
        * 判断是x轴是缩小还是变大 -- ((左侧宽度 + 右侧宽度) > 父级宽度) === 缩小
        */
-      const isZoom = catalogContentSize[0] + editorContentSize[0] > parentContentSize[0]
-      
-      if (!isZoom) {
-        
+      const lessen = catalogSize.width + editorSize.width > parentContentSize[0]
+      const isMinimum = editorSize.width <= editorMinWidth
+      if (lessen) {
+        // 判断当前右侧是否到了最小宽度,没有的话不对左侧进行宽度更改
+        if (!isMinimum) {
+          this.catalog.setSize(catalogSize.width, parentContentSize[1])
+          // 右侧宽度 = 父级宽度 - 左侧宽度
+          const rightWidth = parentContentSize[0] - catalogSize.width
+          this.editor.setSize(rightWidth, parentContentSize[1])
+        } else {
+          this.editor.setSize(editorSize.width, parentContentSize[1])
+          // 左侧宽度 = 父级宽度 - 左侧宽度
+          const leftWidth = parentContentSize[0] - editorSize.width
+          this.catalog.setSize(leftWidth, parentContentSize[1])
+        }
+      } else {
+        // 放大的话 只处理右侧就行了
+        const rightWidth = parentContentSize[0] - catalogSize.width
+        this.editor.setSize(rightWidth, parentContentSize[1])
+        this.catalog.setSize(catalogSize.width, parentContentSize[1])
       }
-      console.log(isZoom)
-
-      // this.catalog.setSize(catalog[0], contentSize[1])
-      // this.child.setPosition(size.x + offset, size.y + size.height - contentSize[1] - offset)
+      // 随时更新左侧的maxWidth 因为后续左侧拉大时会把右面顶出去 所以要限定最大宽度
+      const leftMaxWidth = parentContentSize[0] - editorMinWidth
+      this.catalog.setMaximumSize(leftMaxWidth, parentContentSize[1])
+      // 如果是上下拉动,还要设置左侧和右侧的 x值
+      const parentHeight = parentPositionSize.height - parentContentSize[1] + parentPositionSize.y
+      this.catalog.setPosition(catalogSize.x, parentHeight)
+      this.editor.setPosition(editorSize.x, parentHeight)
     })
     this.parent.on('move', () => {
       const size = this.parent.getBounds()
       const contentSize = this.parent.getContentSize()
+      const catalogSize = this.catalog.getBounds()
       const Y = size.y + size.height - contentSize[1] - offset
+      const rightX = size.x + offset + catalogSize.width
       this.catalog.setPosition(size.x + offset, Y)
-      this.editor.setPosition(size.x + offset + 300, Y)
+      this.editor.setPosition(rightX, Y)
+    })
+    // 目录改变 右侧的尺寸和x轴向 都跟着变,
+    this.catalog.on('resize', () => {
+      const catalogSize = this.catalog.getBounds()
+      const parentContentSize = this.parent.getContentSize()
+      const rightWidth = parentContentSize[0] - catalogSize.width
+      this.editor.setSize(rightWidth, catalogSize.height)
+      // 右侧的x值是左侧的x+宽度
+      const rightX = catalogSize.x + catalogSize.width
+      this.editor.setPosition(rightX, catalogSize.y)
     })
   }
 }
