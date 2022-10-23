@@ -21,6 +21,7 @@ class WindowChange {
   // 当父级窗口改变大小和移动时
   parentWindowChange() {
     this.parent.on('resize', () => {
+      this.editor.setResizable(true)
       const parentContentSize = this.parent.getContentSize()
       const parentPositionSize = this.parent.getBounds()
       const catalogSize = this.catalog.getBounds()
@@ -33,7 +34,7 @@ class WindowChange {
        * 
        * 判断是x轴是缩小还是变大 -- ((左侧宽度 + 右侧宽度) > 父级宽度) === 缩小
        */
-      const lessen = catalogSize.width + editorSize.width > parentContentSize[0]
+      const lessen = catalogSize.width + editorSize.width >= parentContentSize[0]
       const isMinimum = editorSize.width <= editorMinWidth
       if (lessen) {
         // 判断当前右侧是否到了最小宽度,没有的话不对左侧进行宽度更改
@@ -43,8 +44,9 @@ class WindowChange {
           const rightWidth = parentContentSize[0] - catalogSize.width
           this.editor.setSize(rightWidth, parentContentSize[1])
         } else {
-          this.editor.setSize(editorSize.width, parentContentSize[1])
-          // 左侧宽度 = 父级宽度 - 左侧宽度
+          // 右侧的宽度等于 父级的宽度-左侧的
+          this.editor.setSize(parentContentSize[0] - catalogSize.width, parentContentSize[1])
+          // 左侧宽度 = 父级宽度 - 右侧宽度
           const leftWidth = parentContentSize[0] - editorSize.width
           this.catalog.setSize(leftWidth, parentContentSize[1])
         }
@@ -54,13 +56,11 @@ class WindowChange {
         this.editor.setSize(rightWidth, parentContentSize[1])
         this.catalog.setSize(catalogSize.width, parentContentSize[1])
       }
-      // 随时更新左侧的maxWidth 因为后续左侧拉大时会把右面顶出去 所以要限定最大宽度
-      const leftMaxWidth = parentContentSize[0] - editorMinWidth
-      this.catalog.setMaximumSize(leftMaxWidth, parentContentSize[1])
       // 如果是上下拉动,还要设置左侧和右侧的 x值
-      const parentHeight = parentPositionSize.height - parentContentSize[1] + parentPositionSize.y
+      const parentHeight = parentPositionSize.height - parentContentSize[1] + parentPositionSize.y - offset
       this.catalog.setPosition(catalogSize.x, parentHeight)
       this.editor.setPosition(editorSize.x, parentHeight)
+      this.editor.setResizable(false)
     })
     this.parent.on('move', () => {
       const size = this.parent.getBounds()
@@ -76,6 +76,7 @@ class WindowChange {
       const catalogSize = this.catalog.getBounds()
       const parentContentSize = this.parent.getContentSize()
       const rightWidth = parentContentSize[0] - catalogSize.width
+      this.editor.setMinimumSize(300, parentContentSize[1])
       this.editor.setSize(rightWidth, catalogSize.height)
       // 右侧的x值是左侧的x+宽度
       const rightX = catalogSize.x + catalogSize.width

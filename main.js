@@ -8,6 +8,7 @@ const { getWindowCinfig } = require('./util/getParams')
 
 
 const windows = {}
+const offset = process.platform === 'darwin' ? 0 : 8
 
 app.on('ready', async () => {
   const _isExistProject = await isExistProject()
@@ -21,7 +22,7 @@ app.on('ready', async () => {
 
 async function initMainWindow() {
   windows.mainWindow = new BrowserWindow({
-    ...getWindowCinfig(1280, 1000, 600, undefined, 500, true),
+    ...getWindowCinfig(1200, 1000, 900 + offset + offset, undefined, 500, true),
     opacity: 1
   })
   windows.mainWindow.loadFile(getPath('public/empty.html'))

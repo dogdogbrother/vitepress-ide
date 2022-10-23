@@ -12,6 +12,7 @@ function createCatalog(_window, _app) {
       parent: _window.mainWindow,
       width: 300,
       minWidth: 300,
+      maxWidth: 600,
       // maxWidth: 这个应该是父级窗口 - 右侧最小宽度也就是300,
       frame: false,
       ...getMenu_height_x_y(_window.mainWindow),
