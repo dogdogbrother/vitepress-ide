@@ -1,8 +1,9 @@
+import { Menu } from 'antd'
 
-function Menu() {
-  return <div className="w-screen h-screen relative">
+function _Menu() {
+  return <div className="w-screen h-screen">
     Menu
   </div>
 }
 
-export default Menu
+export default _Menu

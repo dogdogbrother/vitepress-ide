@@ -1,4 +1,4 @@
-const { ipcMain, dialog, BrowserWindow, Notification } = require('electron')
+const { ipcMain, dialog, BrowserWindow } = require('electron')
 const fs = require('fs')
 const path = require('path')
 const { spawn } = require('child_process')

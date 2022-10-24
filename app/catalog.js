@@ -1,6 +1,7 @@
 const { BrowserWindow } = require('electron')
 const { getMenu_height_x_y } = require('../util/windowChange')
-
+const fs = require('fs')
+const { getPath } = require('../util/getPath')
 /**
  * @description 创建编辑器左侧的目录菜单
  * @param {*} windows 
@@ -19,15 +20,18 @@ function createCatalog(_window, _app) {
       hasShadow: false,
       thickFrame: false,
       roundedCorners: false,
-      focusable: false,
+      // focusable: false,
+      focusable: true,
       webPreferences: { 
         nodeIntegration: true,
         contextIsolation: false
       },
     })
     _window.menuWindow.loadURL('http://localhost:5500/menu')
-    _window.menuWindow.on('ready-to-show', () => {
+    _window.menuWindow.on('ready-to-show', async () => {
       resolve()
+      const MenuConfig = await import('../public/template/docs/.vitepress/config.mjs')
+      _window.menuWindow.webContents.postMessage('changeMenus', JSON.stringify(MenuConfig))
     })
   })
 }
