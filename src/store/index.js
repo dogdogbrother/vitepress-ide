@@ -4,6 +4,7 @@ const { ipcRenderer } = require('electron')
 class Store {
   createProjectInfo = []  // 创建项目时的命令行的信息输出
   menus = []  // 左侧menus
+  doctext = ""
   constructor() {
     makeAutoObservable(this)
     ipcRenderer.on('createProjectInfo', (_event, info) => {
@@ -25,14 +26,21 @@ class Store {
         // ]
       // }
       // 路由: nav 负责上层路由,sidebar负责子路由 
-      const { nav, sidebar } = JSON.parseinfo(info)
+      const { nav, sidebar } = JSON.parse(info)
       const routers = []
-      nav.forEarch(n => {
-        console.log(n);
+      nav.forEach(n => {
         const { text, link, items } = n
+        routers.push({
+          text,
+          link,
+          items
+        })
       })
       // this.addCreateProjectInfo(info)
-      this.changeMenus(info)
+      this.changeMenus(routers)
+    })
+    ipcRenderer.on('viewDoc', (_event, info) => {
+      this.setDoctext(info)
     })
   }
   addCreateProjectInfo = (info) => {
@@ -40,6 +48,9 @@ class Store {
   }
   changeMenus = (menus) => {
     this.menus = menus
+  }
+  setDoctext = (doctext) => {
+    this.doctext = doctext
   }
  }
 

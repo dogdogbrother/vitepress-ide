@@ -38,18 +38,23 @@ class WindowChange {
       const isMinimum = editorSize.width <= editorMinWidth
       if (lessen) {
         // 判断当前右侧是否到了最小宽度,没有的话不对左侧进行宽度更改
-        if (!isMinimum) {
-          this.catalog.setSize(catalogSize.width, parentContentSize[1])
-          // 右侧宽度 = 父级宽度 - 左侧宽度
-          const rightWidth = parentContentSize[0] - catalogSize.width
-          this.editor.setSize(rightWidth, parentContentSize[1])
-        } else {
-          // 右侧的宽度等于 父级的宽度-左侧的
-          this.editor.setSize(parentContentSize[0] - catalogSize.width, parentContentSize[1])
+        // if (!isMinimum) {
+        //   // 注释的原因是因为 父窗口的最小宽度被写死了 不会涉及到左侧缩小
+        //   this.catalog.setSize(catalogSize.width, parentContentSize[1])
+        //   // 右侧宽度 = 父级宽度 - 左侧宽度
+        //   const rightWidth = parentContentSize[0] - catalogSize.width
+        //   this.editor.setSize(rightWidth, parentContentSize[1])
+        // } else {
+        //   // 右侧的宽度等于 父级的宽度-左侧的
+        //   this.editor.setSize(parentContentSize[0] - catalogSize.width, parentContentSize[1])
+        //   // 左侧宽度 = 父级宽度 - 右侧宽度
+        //   const leftWidth = parentContentSize[0] - editorSize.width
+        //   this.catalog.setSize(leftWidth, parentContentSize[1])
+        // }
+        this.editor.setSize(parentContentSize[0] - catalogSize.width, parentContentSize[1])
           // 左侧宽度 = 父级宽度 - 右侧宽度
-          const leftWidth = parentContentSize[0] - editorSize.width
-          this.catalog.setSize(leftWidth, parentContentSize[1])
-        }
+        const leftWidth = parentContentSize[0] - editorSize.width
+        this.catalog.setSize(leftWidth, parentContentSize[1])
       } else {
         // 放大的话 只处理右侧就行了
         const rightWidth = parentContentSize[0] - catalogSize.width
@@ -71,6 +76,13 @@ class WindowChange {
       this.catalog.setPosition(size.x + offset, Y)
       this.editor.setPosition(rightX, Y)
     })
+    // 当主窗口从最大化变成正常 把2个子窗口都设置好
+    this.parent.on('unmaximize', () => {
+      this.renew()
+    })
+    this.parent.on('restore', () => {
+      this.renew()
+    })
     // 目录改变 右侧的尺寸和x轴向 都跟着变,
     this.catalog.on('resize', () => {
       const catalogSize = this.catalog.getBounds()
@@ -82,6 +94,18 @@ class WindowChange {
       const rightX = catalogSize.x + catalogSize.width
       this.editor.setPosition(rightX, catalogSize.y)
     })
+  }
+  // 最小化和最大化后，恢复常态形状
+  renew() {
+    const parentContentSize = this.parent.getContentSize()
+    const parentPositionSize = this.parent.getBounds()
+    const catalogSize = this.catalog.getBounds()
+    const parentHeight = parentPositionSize.y + parentPositionSize.height - parentContentSize[1] - offset
+    this.catalog.setPosition(parentPositionSize.x + offset, parentHeight)
+    this.editor.setPosition(catalogSize.width + parentPositionSize.x + offset, parentHeight)
+    this.editor.setResizable(true)
+    this.editor.setSize(parentContentSize[0] - catalogSize.width, parentContentSize[1])
+    this.editor.setResizable(false)
   }
 }
 

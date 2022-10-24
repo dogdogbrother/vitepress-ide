@@ -1,7 +1,6 @@
-const { BrowserWindow } = require('electron')
+const { BrowserWindow, ipcMain, Menu, MenuItem } = require('electron')
 const { getMenu_height_x_y } = require('../util/windowChange')
-const fs = require('fs')
-const { getPath } = require('../util/getPath')
+
 /**
  * @description 创建编辑器左侧的目录菜单
  * @param {*} windows 
@@ -31,7 +30,18 @@ function createCatalog(_window, _app) {
     _window.menuWindow.on('ready-to-show', async () => {
       resolve()
       const MenuConfig = await import('../public/template/docs/.vitepress/config.mjs')
-      _window.menuWindow.webContents.postMessage('changeMenus', JSON.stringify(MenuConfig))
+      _window.menuWindow.webContents.postMessage('changeMenus', JSON.stringify(MenuConfig.default.themeConfig))
+      _window.menuWindow.webContents.openDevTools()
+    })
+    ipcMain.on('menuContextMenu', (e, _info) => {
+      const menu = new Menu()
+      menu.append(new MenuItem({
+        label: "创建目录",
+        click: () => {
+          // console.log('clicking') 
+        }
+      }))
+      menu.popup(BrowserWindow.fromWebContents(e.sender))
     })
   })
 }
