@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import CreateProjectLoading from './pages/createProjectLoading'
 import Menu from './pages/menu'
 import Editor from './pages/editor'
+import CreateMenu from './pages/createMenu'
 // const { ipcRenderer } = require('electron')
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path='/menu' element={<Menu />}></Route>
         {/* 编辑器的右侧编辑区域 */}
         <Route path='/editor' element={<Editor />}></Route>
+        <Route path='/create-menu' element={<CreateMenu />}></Route>
       </Routes>
     </BrowserRouter>
   </div>
