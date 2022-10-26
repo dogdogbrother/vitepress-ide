@@ -19,11 +19,14 @@ function Menu() {
     // ipcRenderer.send('to-doc', JSON.stringify(menu))
     ipcRenderer.send('to-doc', menu.link)
   }
-  return <div className="w-screen h-screen">
+  return <div className="w-screen h-screen px-4 py-2">
     {
       stroe.menus.map(menu => {
         const { text } = menu
-        return <div key={text} onClick={toDoc(menu)}>{text}</div>
+        return <div className='py-2 text-4 cursor-pointer flex' key={text} onClick={toDoc(menu)}>
+          <p className='flex-1 font-semibold'>{text}</p>
+          <span>123</span>
+        </div>
       })
     }
   </div>

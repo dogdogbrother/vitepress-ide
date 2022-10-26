@@ -1,6 +1,13 @@
 const { BrowserWindow, ipcMain, Menu, MenuItem } = require('electron')
 const { getMenu_height_x_y } = require('../util/windowChange')
 const { createMenu } = require('./createMenu')
+
+// 刚创建了新的menu的时候，还要通知更新menu
+async function sendMenuConfig(_window) {
+  const MenuConfig = await import('../public/template/docs/.vitepress/config.mjs')
+  _window.menuWindow.webContents.postMessage('changeMenus', JSON.stringify(MenuConfig.default.themeConfig))
+}
+
 /**
  * @description 创建编辑器左侧的目录菜单
  * @param {*} windows 
@@ -29,8 +36,7 @@ function createCatalog(_window, _app) {
     _window.menuWindow.loadURL('http://localhost:5500/menu')
     _window.menuWindow.on('ready-to-show', async () => {
       resolve()
-      const MenuConfig = await import('../public/template/docs/.vitepress/config.mjs')
-      _window.menuWindow.webContents.postMessage('changeMenus', JSON.stringify(MenuConfig.default.themeConfig))
+      sendMenuConfig(_window)
       // _window.menuWindow.webContents.openDevTools()
     })
     ipcMain.on('menuContextMenu', (e, _info) => {
@@ -39,14 +45,13 @@ function createCatalog(_window, _app) {
         label: "创建导航",
         click: () => {
           createMenu(_window, _app)  
-          // console.log('clicking') 
         }
       }))
       menu.popup(BrowserWindow.fromWebContents(e.sender))
     })
   })
 }
-
 module.exports = {
-  createCatalog
+  createCatalog,
+  sendMenuConfig
 }
