@@ -3,28 +3,33 @@
   "private": true,
   "version": "0.0.0",
   "main": "main.js",
+  "author": "senlin",
   "scripts": {
     "_dev": "vite --port 5500",
     "build": "vite build",
     "preview": "vite preview",
     "electron": "wait-on tcp:5500 && cross-env NODE_ENV=development electron .",
     "dev": "concurrently -k \"npm run _dev\" \"npm run electron\"",
-    "electron:build": "npm run build && electron-builder"
+    "electron:build": "npm run build && electron-builder",
+    "pack": "electron-builder --dir"
   },
   "dependencies": {
     "@unocss/reset": "^0.45.29",
     "antd": "^4.23.5",
-    "electron": "^21.1.1",
     "iconv-lite": "^0.6.3",
     "mobx": "^6.6.2",
     "mobx-react-lite": "^3.4.0",
     "prettier": "^2.7.1",
+    "prismjs": "^1.29.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router": "^6.4.2",
-    "react-router-dom": "^6.4.2"
+    "react-router-dom": "^6.4.2",
+    "vite-plugin-prismjs": "0.0.8"
   },
   "devDependencies": {
+    "electron-builder": "^23.6.0",
+    "electron": "^21.1.1",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "@vitejs/plugin-react": "^2.1.0",
@@ -34,5 +39,10 @@
     "unocss": "^0.45.29",
     "vite": "^3.1.0",
     "wait-on": "^6.0.1"
+  },
+  "build": {
+    "appId": "vitePress.ElectronReact",
+    "productName": "vitePressIde",
+    "copyright": "Copyright © 2019 ${author}",
   }
 }

@@ -14,7 +14,7 @@ function createEditor(_window, _app) {
     hasShadow: false,
     thickFrame: false,
     roundedCorners: false,
-    focusable: false,
+    // focusable: false,
     resizable: false,
     webPreferences: { 
       nodeIntegration: true,
@@ -22,6 +22,7 @@ function createEditor(_window, _app) {
     },
   })
   _window.editorWindow.loadURL('http://localhost:5500/editor')
+  _window.editorWindow.webContents.openDevTools()
   new WindowChange(_window)
   // 监听菜单栏左侧的点击,找到对应的文件，解析出内容发送给编辑器用
   ipcMain.on('to-doc', async (_e, link) => {

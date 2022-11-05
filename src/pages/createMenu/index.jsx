@@ -1,3 +1,4 @@
+// import 'antd/dist/antd.css'
 import { Button, Form, Input } from 'antd'
 const { ipcRenderer } = require('electron')
 function CreateMenu() {
