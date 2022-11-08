@@ -41,7 +41,7 @@ async function createProject(_window, _app) {
       contextIsolation: false
     }
   })
-  _window.rootWindow.loadFile(getPath('public/empty.html'))
+  _window.rootWindow.loadFile(getPath('_dist/empty.html'))
   choiceAction(_window, _app)
 }
 

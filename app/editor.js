@@ -2,6 +2,8 @@ const { BrowserWindow, ipcMain } = require('electron')
 const { WindowChange, getEdit_height_width_x_y } = require('../util/windowChange')
 const fs = require('fs')
 const { getDocPath } = require('../util/getPath')
+const { loadURL } = require('../util/openFile')
+
 /**
  * @description 创建主页面的编辑区域
  */
@@ -21,7 +23,7 @@ function createEditor(_window, _app) {
       contextIsolation: false
     },
   })
-  _window.editorWindow.loadURL('http://localhost:5500/editor')
+  loadURL(_window.editorWindow, '/editor')
   _window.editorWindow.webContents.openDevTools()
   new WindowChange(_window)
   // 监听菜单栏左侧的点击,找到对应的文件，解析出内容发送给编辑器用

@@ -7,10 +7,13 @@ class Store {
   doctext = ""
   constructor() {
     makeAutoObservable(this)
-    console.log('会只执行一次吗');
     ipcRenderer.on('createProjectInfo', (_event, info) => {
       // type 1是 success 2是 warning 3是 error  暂时没有3
       this.addCreateProjectInfo(info)
+    })
+    
+    ipcRenderer.on('textErr', (_event, info) => {
+      console.log(info);
     })
     ipcRenderer.on('changeMenus', (_event, info) => {
       // nav: [
